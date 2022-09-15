@@ -11,7 +11,6 @@ def index():
 def get_data():
     if 'data' in request.form:
         data = str(request.form['data'])
-        dt = data.split(',')
         print(data)
         with open(DATAFILE, 'a') as f:
             f.write(data)
