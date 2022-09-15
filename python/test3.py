@@ -14,7 +14,10 @@ def read_data():
     while True:   
         data = ser.readline().decode().replace('\r\n','')
         if data != '':
-            datalist.append(round(int(data)/ 1023 *5, 7))
+            vol = round(int(data)/ 1023 *5, 7)
+            # 距離*電圧=30
+            dis = round(28/vol, 7)
+            datalist.append(dis)
         if len(datalist) > 10:
             break
     return datalist
