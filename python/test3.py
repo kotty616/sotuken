@@ -24,6 +24,6 @@ def read_data():
     return datalist
 
 if __name__ == '__main__':
-    data =read_data()
-    print(read_data())
+    data = read_data()
+    print(data)
     post(data)
