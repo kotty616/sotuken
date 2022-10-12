@@ -3,29 +3,30 @@ from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 
 ser = serial.Serial("/dev/ttyACM0", 9600, timeout=1)
-url = 'http://127.0.0.1:5000/post'
+url = 'http://127.0.0.0:5000/post'
 
 def dataset():
-    data_list = []
+    datalist = []
     print("start")
     for i in range(15):            
         while True:
-            if ser.in_waiting > 0:    
-                dt = ser.read_all().decode().split('\r\n')
-                # dt = [ds.remove('\n') for ds in dt]
-                # dt = float(dt[0], 10) * 3.846
-                dt = dt[0]
-                dt_now = datetime.now()
-                data_list.append([i+1,dt,dt_now.strftime('%H:%M:%S')])
+            if len(datalist) == 15: 
                 break
-
-        time.sleep(.5)
-    return data_list
+            data = ser.readline().decode().replace('\r\n','')
+            if data != '':
+                vol = round(int(data,16)/ 1023 *5, 7)
+                hosei = 28
+                # 距離*電圧=30 (2.6V*10cm=26, 1.0V*30cm=30)
+                dis = round(hosei/vol, 7)
+                dt_now = datetime.now()
+                datalist.append([i+1,dis,dt_now.strftime('%H:%M:%S')])
+            time.sleep(.5)
+    return datalist
 
 def post(data):
     r = requests.post(url, data={"data": str(data)})
     time.sleep(3)
-    print(r.status_code)
+    print(r)
 
 
 if __name__ == '__main__':

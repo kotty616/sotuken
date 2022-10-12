@@ -10,8 +10,8 @@ def index():
 @app.route('/post', methods=['POST'])
 def get_data():
     if 'data' in request.form:
-        data = str(request.form['data'])
-        print(data)
+        data = request.form.get('data')
+        print(list(data))
         with open(DATAFILE, 'a') as f:
             f.write(data)
             f.write('\n')
@@ -20,4 +20,4 @@ def get_data():
     return "None"
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1',port=5000, debug=True)
+    app.run(host='127.0.0.0',port=5000, debug=True)
