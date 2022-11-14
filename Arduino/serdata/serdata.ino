@@ -1,5 +1,6 @@
 const int ser_PIN = A0;
 const int PIN = 12;
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);

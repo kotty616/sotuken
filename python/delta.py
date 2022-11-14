@@ -5,14 +5,14 @@ from concurrent.futures import ThreadPoolExecutor
 url = 'http://127.0.0.1:5000/post'
 
 def dataset(id):
-    data_list = []
+    data_list = [id]
     print("start")
     for i in range(15):            
         while True:
-                dt = i+1
-                dt_now = datetime.now()
-                data_list.append([id,dt,dt_now.strftime('%H:%M:%S')])
-                break
+            dt = i+1
+            dt_now = datetime.now()
+            data_list.append([dt,dt_now.strftime('%H:%M:%S')])
+            break
 
         time.sleep(.5)
     return data_list
