@@ -9,7 +9,7 @@ def dataset(id):
     datalist = {"id":id}
     print("start")
     while True:
-        if len(datalist) > 10: 
+        if len(datalist) > 15: 
             break
         data = ser.readline().decode().replace('\r\n','')
         if data != '':
@@ -33,8 +33,9 @@ def post(data):
 
 if __name__ == '__main__':
     executor = ThreadPoolExecutor(max_workers=2)
-    id = int(sys.argv[1])
-    #for i in range(3):
-    executor.submit(post, dataset(id))
+    
+    for i in range(3):
+        id = int(sys.argv[i+1])
+        executor.submit(post, dataset(id))
 
     executor.shutdown
