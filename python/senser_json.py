@@ -20,6 +20,7 @@ def dataset(id):
                 dis = round(hosei/vol, 7)
                 dt_now = datetime.now()
                 data = {"dis":dis, "time":dt_now.strftime("%H:%M:%S.%f")}
+                print(data)
                 datalist[f"data{len(datalist)}"] = data
                 time.sleep(.5)
     # print(datalist)

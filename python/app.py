@@ -1,37 +1,7 @@
 from flask import Flask, render_template, request
 import json
-import mysql.connector
 
-class Mysql:
-    def __init__(self, config) -> None:
-        self.conn_db(config)
-        
-    def __del__(self):
-        if self.conn.is_connected():
-            return "NONE"
-        self.cur.close()
-
-    def conn_db(self, config):
-        self.conn = mysql.connector.connect(**config)
-        if not self.conn.is_connected():
-            return -1
-        return self.cursor()
-    
-    def cursor(self):
-        self.cur = self.conn.cursor()
-    
-    def insert_db(self, datadict):
-        id = datadict.pop("id")
-        for data in datadict.values():
-            quely = 'INSERT INTO datalist VALUES({0},"{2}",{1});'.format(id,*data.values())
-            self.cur.execute(quely)
-        self.conn.commit()
-
-    def show_db(self):
-        quely = f"SELECT * FROM datalist"
-        self.cur.execute(quely)
-        for fet in self.cur.fetchall():
-            print(fet)
+from class_db import Mysql
 
 app = Flask(__name__)
 config = {
@@ -53,6 +23,7 @@ def get_text():
     mysql = Mysql(config)
     mysql.insert_db(d)
     mysql.show_db()
+    mysql._close()
 
     return 'NONE'
 
