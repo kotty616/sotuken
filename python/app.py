@@ -1,33 +1,63 @@
 from flask import Flask, render_template, request
-import mysql.connector , json
+import json
+import mysql.connector
 
+class Mysql:
+    def __init__(self, config) -> None:
+        self.conn_db(config)
+        
+    def __del__(self):
+        if self.conn.is_connected():
+            return "NONE"
+        self.cur.close()
+
+    def conn_db(self, config):
+        self.conn = mysql.connector.connect(**config)
+        if not self.conn.is_connected():
+            return -1
+        return self.cursor()
+    
+    def cursor(self):
+        self.cur = self.conn.cursor()
+    
+    def insert_db(self, datadict):
+        id = datadict.pop("id")
+        for data in datadict.values():
+            quely = 'INSERT INTO datalist VALUES({0},"{2}",{1});'.format(id,*data.values())
+            self.cur.execute(quely)
+        self.conn.commit()
+
+    def show_db(self):
+        quely = f"SELECT * FROM datalist"
+        self.cur.execute(quely)
+        for fet in self.cur.fetchall():
+            print(fet)
 
 app = Flask(__name__)
-DATAFILE = "data/data.txt"
-
-def conn_db():
-    conn = mysql.connector.connect(
-        host = 'localhost',
-        user = 'pi',
-        password = 'pass',
-        database = 'sotuken'
-    )
-    return conn
-
-def insert_datalist(cur, id, dis, time):
-    sql = f"INSERT INTO datalist VALUES({id}, {time}, {dis});"
-    print(sql)
-    cur.execute(sql)
-
-def show_db(cur, datalist):
-    sql = f"SELECT * FROM {datalist};"
-    cur.execute(sql)
-    for fet in cur.fetchall():
-        print(fet, sep='\n')
+config = {
+    "user":'pi',
+    "host":'localhost',
+    "password":'pass',
+    "database":'sotuken'
+}
 
 @app.route('/')
 def index():
     return render_template("index.html")
+
+@app.route('/tmp', methods=["POST"])
+def get_text():
+    d = request.get_json()["data"]
+    d = json.loads(d)
+
+    mysql = Mysql(config)
+    mysql.insert_db(d)
+    mysql.show_db()
+
+    return 'NONE'
+
+if __name__ == '__main__':
+    app.run(host='127.0.0.0',port=5000, debug=True)
 
 @app.route('/test', methods=['POST'])
 def get_test():
@@ -46,20 +76,34 @@ def get_test():
                 d = d.replace("'","").replace(" ","")
                 print(d)
                 time.append('"'+d+'"')
-
-        conn = conn_db()
-        if not conn.is_connected():
-            return -1
-        cur = conn.cursor()
-
-        for d,t in zip(dis,time):
-            insert_datalist(cur, id, d, t)
-
-        conn.commit()
-        show_db(cur,'datalist')
-
-        cur.close()
     return "None"
+
+# @app.route('/post', methods=['POST'])
+# def get_data():
+#     if 'data' in request.form:
+#         data = request.form.get('data')
+#         #print(list(data))
+#         with open(DATAFILE, 'a') as f:
+#             f.write(data)
+#             f.write('\n')
+#     else:
+#         print('Not data')
+#     return "None"
+
+"""
+def conn_db():
+    conn = mysql.connector.connect(
+        host = 'localhost',
+        user = 'pi',
+        password = 'pass',
+        database = 'sotuken'
+    )
+    return conn
+
+def insert_datalist(cur, id, dis, time):
+    sql = f"INSERT INTO datalist VALUES({id}, {time}, {dis});"
+    print(sql)
+    cur.execute(sql)
 
 def json_insert(cur,dic):
     quely = "INSERT INTO smpdata VALUES("
@@ -73,33 +117,10 @@ def json_insert(cur,dic):
     quely = quely + ");"
     print(quely)
     cur.execute(quely)
-
-@app.route('/tmp', methods=["POST"])
-def get_text():
-    d = request.get_json()["data"]
-    d = json.loads(d)
-
-    conn = conn_db()
-    if not conn.is_connected():
-        return -1
-    cur = conn.cursor()
-    json_insert(cur,d)
-    conn.commit()
-
-    show_db(cur, 'smpdata')
-    return 'NONE'
-
-@app.route('/post', methods=['POST'])
-def get_data():
-    if 'data' in request.form:
-        data = request.form.get('data')
-        #print(list(data))
-        with open(DATAFILE, 'a') as f:
-            f.write(data)
-            f.write('\n')
-    else:
-        print('Not data')
-    return "None"
-
-if __name__ == '__main__':
-    app.run(host='127.0.0.0',port=5000, debug=True)
+    
+def show_db(cur, datalist):
+    sql = f"SELECT * FROM {datalist};"
+    cur.execute(sql)
+    for fet in cur.fetchall():
+        print(fet)
+"""

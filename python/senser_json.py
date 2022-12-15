@@ -27,15 +27,14 @@ def dataset(id):
 
 def post(data):
     r = requests.post(url, json={"data":data})
-    time.sleep(3)
     print(r)
 
 
 if __name__ == '__main__':
+    # dataset(int(sys.argv[1]))
+
     executor = ThreadPoolExecutor(max_workers=2)
-    
     for i in range(3):
         id = int(sys.argv[i+1])
         executor.submit(post, dataset(id))
-
     executor.shutdown
