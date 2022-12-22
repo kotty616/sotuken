@@ -24,7 +24,7 @@ def dataset(id):
                     print(data)
                     datalist[f"data{len(datalist)}"] = data
                     time.sleep(.5)
-    except KeyboardInterrupt as e:
+    except KeyboardInterrupt:
         data = ser.readline().decode().replace('\r\n','')
         if data != '':
             vol = round(int(data,16)/ 1023 *5, 7)
